@@ -5,7 +5,6 @@ import numpy as np
 from cge.causal.model import ModelConfig, fit_model
 from cge.data import DatasetConfig, GroundTruth, SyntheticGrowthGenerator
 
-
 EXPECTED_EFFECTS = {
     "paid_ua_effect": GroundTruth.paid_ua_effect,
     "influencer_effect": GroundTruth.influencer_effect,
