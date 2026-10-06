@@ -37,9 +37,9 @@ multiple days so that the model can represent:
 - correlated interventions
 - repeated observations within products
 
-The initial target scale is approximately:
+The initial target scale is approximately
 
-    30 products × 365 days = 10,950 observations
+    5 products × 365 days = 1,825 observations
 
 The architecture must not assume that this scale is fixed.
 
