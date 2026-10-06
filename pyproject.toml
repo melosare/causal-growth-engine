@@ -55,3 +55,7 @@ select = [
 python_version = "3.11"
 mypy_path = "src"
 strict = true
+
+[[tool.mypy.overrides]]
+module = ["pymc"]
+ignore_missing_imports = true
