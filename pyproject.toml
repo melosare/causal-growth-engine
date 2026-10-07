@@ -57,5 +57,7 @@ mypy_path = "src"
 strict = true
 
 [[tool.mypy.overrides]]
-module = ["pymc"]
+module = ["pymc",
+        "sklearn",
+        "sklearn.*",]
 ignore_missing_imports = true
