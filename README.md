@@ -2,28 +2,33 @@
 
 A Bayesian causal growth and budget-allocation engine for understanding **what drives organic growth, how those drivers affect revenue, and how investment should be allocated across controllable growth levers**.
 
-The project is designed around a product portfolio where marketing, product, social, and business data are combined to estimate causal effects and evaluate counterfactual investment strategies.
+The project combines synthetic product, marketing, social, and business data to estimate causal effects and evaluate counterfactual investment strategies.
 
 ## Project Status
 
-**Current stage: Synthetic data generation and validation**
+**Current stage: End-to-end synthetic causal optimization application**
 
-The first implementation milestone is complete:
+The project currently includes:
 
-- 5-product/title synthetic portfolio
-- 365 daily observations per title
-- 1,825 product-day observations
-- Realistic business-scale treatment variables
-- Endogenous marketing activity driven partly by latent market demand
+- Synthetic growth-data generation
 - Product-level heterogeneity
-- Temporal behavior and seasonality
+- Endogenous marketing activity driven partly by market demand
+- Seasonality and temporal behavior
 - Organic installs, engagement, retention, and revenue outcomes
 - Known causal ground truth for model validation
+- Hierarchical Bayesian causal modeling with PyMC
+- Posterior treatment-effect estimation
+- Constrained Bayesian optimization
+- Counterfactual intervention evaluation
+- Strategy recommendations
+- Optimization diagnostics
+- Executive-facing Streamlit dashboard
+- Interactive impact and allocation visualizations
 - Automated tests
 - Ruff linting
 - Strict mypy type checking
 
-The next milestone is the causal model: a hierarchical Bayesian model implemented with PyMC and validated against the known synthetic ground truth.
+The application is designed to demonstrate a complete workflow from **synthetic data generation → causal inference → optimization → executive decision support**.
 
 ## Objective
 
@@ -33,7 +38,7 @@ The long-term objective is to answer questions such as:
 
 > Which controllable growth drivers have the strongest causal effect on organic acquisition?
 
-> Given a fixed investment budget, how should that budget be allocated across titles and growth levers?
+> Given a fixed investment budget, how should investment be allocated across growth levers?
 
 > What is the expected range of outcomes rather than a single point estimate?
 
@@ -41,7 +46,7 @@ The system is intended to move from **descriptive analytics** toward **causal de
 
 ## Core Causal Framework
 
-The initial model distinguishes between controllable treatments, downstream mediators, confounders, and business outcomes.
+The model distinguishes between controllable treatments, downstream mediators, confounders, and business outcomes.
 
 ### Primary Controllable Treatments
 
@@ -50,6 +55,8 @@ The initial model distinguishes between controllable treatments, downstream medi
 - `social_media_posts`
 - `product_test_release`
 - `product_version_update`
+
+These are the primary growth levers available to the optimizer.
 
 ### Downstream Variables / Mediators
 
@@ -67,9 +74,11 @@ These variables may be affected by the primary treatments and therefore should n
 - `retention`
 - `revenue`
 
+The primary optimization objective is incremental organic installs, while the broader dataset supports downstream engagement, retention, and revenue analysis.
+
 ### Important Confounder
 
-The synthetic environment includes latent/observed `market_demand`.
+The synthetic environment includes `market_demand`.
 
 Market demand can influence both business decisions and organic acquisition, creating the type of confounding that the causal model must account for.
 
