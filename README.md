@@ -30,6 +30,47 @@ The project currently includes:
 
 The application is designed to demonstrate a complete workflow from **synthetic data generation → causal inference → optimization → executive decision support**.
 
+## Running the Streamlit Application
+
+The project includes an executive-facing Streamlit dashboard for exploring the causal model and optimization results interactively.
+
+
+### 1. Start the Streamlit application
+
+From the project root:
+
+    python -m streamlit run app/streamlit_app.py
+
+Streamlit will start a local web server and display a URL similar to:
+
+    Local URL: http://localhost:8501
+
+Open the local URL in your browser to use the dashboard.
+
+### 2. Stop the application
+
+Press `Ctrl+C` in the terminal running Streamlit.
+
+## Running the Test Suite
+
+Run the complete test suite:
+
+    pytest
+
+Run Ruff linting:
+
+    ruff check .
+
+Run mypy type checking:
+
+    mypy src
+
+A complete local validation run is:
+
+    pytest
+    ruff check .
+    mypy src
+
 ## Objective
 
 The long-term objective is to answer questions such as:
@@ -84,17 +125,193 @@ Market demand can influence both business decisions and organic acquisition, cre
 
 Conceptually:
 
-```text
-                    Market Demand
-                   /             \
-                  v               v
-        Marketing Decisions    Organic Growth
-                  |
-                  v
-          Downstream Effects
-                  |
-                  v
-             Organic Growth
-                  |
-                  v
-               Revenue
+    Market Demand
+       /     \
+      v       v
+    Marketing  Organic Growth
+    Decisions
+       |
+       v
+    Downstream Effects
+       |
+       v
+    Organic Growth
+       |
+       v
+    Revenue
+
+## Application Workflow
+
+The application follows a complete causal optimization workflow:
+
+    Synthetic Data
+          |
+          v
+    Causal Model
+          |
+          v
+    Posterior Treatment Effects
+          |
+          v
+    Counterfactual Simulation
+          |
+          v
+    Bayesian Optimization
+          |
+          v
+    Recommended Growth Strategy
+          |
+          v
+    Executive Dashboard
+
+### Synthetic Data Generation
+
+The system generates synthetic product-level daily data containing:
+
+- Marketing activity
+- Product changes
+- Social activity
+- Market demand
+- Organic acquisition
+- Engagement
+- Retention
+- Revenue
+
+The synthetic environment contains known causal relationships, allowing the model to be validated against ground truth.
+
+### Causal Inference
+
+A hierarchical Bayesian model implemented with PyMC estimates treatment effects while accounting for:
+
+- Product-level heterogeneity
+- Market demand
+- Temporal effects
+- Uncertainty in parameter estimates
+
+Posterior samples are retained as an `ArviZ InferenceData` object and passed into downstream simulation and optimization.
+
+### Counterfactual Simulation
+
+The system evaluates hypothetical changes to controllable growth levers and estimates their expected impact on organic installs.
+
+This allows the application to answer questions such as:
+
+- What happens if paid UA spend increases?
+- What happens if social activity increases?
+- Which product changes generate the greatest expected lift?
+- How uncertain is the estimated impact?
+
+### Bayesian Optimization
+
+A Gaussian-process surrogate model is used to search the feasible decision space.
+
+The optimizer:
+
+1. Generates feasible initial strategies.
+2. Evaluates the causal objective.
+3. Fits a Gaussian-process surrogate.
+4. Uses Expected Improvement to select promising candidates.
+5. Evaluates new candidates.
+6. Repeats the process for the configured number of iterations.
+7. Returns the highest-performing observed strategy.
+
+The optimization respects the decision constraints defined by the optimization problem.
+
+## Executive Dashboard
+
+The Streamlit application provides an executive-facing interface for exploring:
+
+- Growth strategy recommendations
+- Expected incremental organic installs
+- Optimization performance
+- Treatment effects
+- Uncertainty
+- Allocation across growth levers
+- Counterfactual impact
+- Optimization diagnostics
+
+The dashboard is designed to expose the decision implications of the model without requiring users to understand the underlying Bayesian implementation.
+
+## Project Structure
+
+    causal-growth-engine/
+    ├── app/
+    │   └── streamlit_app.py
+    ├── examples/
+    │   └── optimize_growth.py
+    ├── src/
+    │   └── cge/
+    │       ├── causal/
+    │       ├── data/
+    │       ├── optimization/
+    │       ├── pipeline/
+    │       ├── reporting/
+    │       └── simulation/
+    ├── tests/
+    │   ├── causal/
+    │   ├── data/
+    │   ├── integration/
+    │   ├── optimization/
+    │   ├── reporting/
+    │   └── simulation/
+    ├── pyproject.toml
+    └── README.md
+
+## Example Workflow
+
+The end-to-end pipeline can also be run programmatically from the example module:
+
+    python examples/optimize_growth.py
+
+The example executes the growth optimization workflow without producing CLI reporting output.
+
+## Development
+
+The project uses:
+
+- Python 3.11
+- PyMC
+- ArviZ
+- NumPy
+- pandas
+- scikit-learn
+- Streamlit
+- Plotly
+- pytest
+- Ruff
+- mypy
+
+### Validation
+
+Before committing changes, run:
+
+    pytest
+    ruff check .
+    mypy src
+
+All three checks should pass before changes are committed.
+
+## Important Modeling Considerations
+
+This project is currently based on synthetic data and is intended as a demonstration and validation environment.
+
+The synthetic dataset provides known causal ground truth, which makes it possible to test whether the causal model can recover the underlying relationships.
+
+In a production environment, additional considerations would include:
+
+- Treatment assignment mechanisms
+- Measurement quality
+- Missing data
+- Time-varying confounding
+- Model misspecification
+- Experimental validation
+- Business constraints
+- Budget constraints
+- Operational feasibility
+- Monitoring of causal-model drift
+
+The optimization output should therefore be interpreted as **decision support under the assumptions of the causal model**, rather than as an unconditional guarantee of future performance.
+
+## License
+
+This project is currently intended as a demonstration project.
