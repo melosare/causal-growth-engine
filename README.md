@@ -314,4 +314,4 @@ The optimization output should therefore be interpreted as **decision support un
 
 ## License
 
-This project is currently intended as a demonstration project.
+This project is currently intended as a de-identified demonstration.
