@@ -111,11 +111,24 @@ def _random_feasible_decision(
         for variable in variables:
             bounds = problem.bounds[variable]
 
-            n_steps = int(round((bounds.maximum - bounds.minimum) / bounds.step))
+            n_steps = int(
+                round(
+                    (bounds.maximum - bounds.minimum)
+                    / bounds.step
+                )
+            )
 
-            step_index = int(rng.integers(0, n_steps + 1))
+            step_index = int(
+                rng.integers(
+                    0,
+                    n_steps + 1,
+                )
+            )
 
-            decision[variable] = bounds.minimum + step_index * bounds.step
+            decision[variable] = (
+                bounds.minimum
+                + step_index * bounds.step
+            )
 
         try:
             problem.validate_decision(decision)
@@ -124,7 +137,9 @@ def _random_feasible_decision(
 
         return decision
 
-    raise RuntimeError("Unable to generate a feasible optimization candidate.")
+    raise RuntimeError(
+        "Unable to generate a feasible optimization candidate."
+    )
 
 
 def _normal_pdf(values: np.ndarray) -> np.ndarray:
@@ -136,9 +151,15 @@ def _normal_pdf(values: np.ndarray) -> np.ndarray:
 def _normal_cdf(values: np.ndarray) -> np.ndarray:
     """Evaluate the standard normal cumulative distribution."""
 
-    result = 0.5 * (1.0 + np.vectorize(erf)(values / sqrt(2.0)))
+    result = 0.5 * (
+        1.0
+        + np.vectorize(erf)(values / sqrt(2.0))
+    )
 
-    return np.asarray(result, dtype=float)
+    return np.asarray(
+        result,
+        dtype=float,
+    )
 
 
 def _expected_improvement(
@@ -149,7 +170,11 @@ def _expected_improvement(
 ) -> np.ndarray:
     """Calculate expected improvement for maximization."""
 
-    improvement = mean - best_value - exploration
+    improvement = (
+        mean
+        - best_value
+        - exploration
+    )
 
     safe_std = np.maximum(
         standard_deviation,
@@ -158,9 +183,15 @@ def _expected_improvement(
 
     z = improvement / safe_std
 
-    result = improvement * _normal_cdf(z) + safe_std * _normal_pdf(z)
+    result = (
+        improvement * _normal_cdf(z)
+        + safe_std * _normal_pdf(z)
+    )
 
-    return np.asarray(result, dtype=float)
+    return np.asarray(
+        result,
+        dtype=float,
+    )
 
 
 def _candidate_pool(
@@ -179,7 +210,10 @@ def _candidate_pool(
             problem=problem,
         )
 
-        key = tuple(decision[variable] for variable in CONTROLLABLE_VARIABLES)
+        key = tuple(
+            decision[variable]
+            for variable in CONTROLLABLE_VARIABLES
+        )
 
         if key in seen:
             continue
@@ -202,12 +236,24 @@ def optimize(
     The Gaussian-process surrogate is trained on observed objective
     values. Expected Improvement then selects the next feasible
     candidate to evaluate.
+
+    The surrogate kernel uses fixed hyperparameters rather than fitting
+    kernel hyperparameters on every iteration. This keeps the optimizer
+    deterministic and avoids convergence warnings when the objective is
+    effectively flat along one or more decision dimensions.
     """
 
-    optimization_problem = problem or OptimizationProblem.default()
-    optimization_config = config or BayesianOptimizationConfig()
+    optimization_problem = (
+        problem or OptimizationProblem.default()
+    )
 
-    rng = np.random.default_rng(optimization_config.random_seed)
+    optimization_config = (
+        config or BayesianOptimizationConfig()
+    )
+
+    rng = np.random.default_rng(
+        optimization_config.random_seed
+    )
 
     observations: list[OptimizationObservation] = []
     seen: set[tuple[float, ...]] = set()
@@ -215,12 +261,17 @@ def optimize(
     def evaluate_candidate(
         decision: dict[DecisionVariable, float],
     ) -> None:
-        key = tuple(decision[variable] for variable in CONTROLLABLE_VARIABLES)
+        key = tuple(
+            decision[variable]
+            for variable in CONTROLLABLE_VARIABLES
+        )
 
         if key in seen:
             return
 
-        optimization_problem.validate_decision(decision)
+        optimization_problem.validate_decision(
+            decision
+        )
 
         result = evaluate_objective(
             data=data,
@@ -238,7 +289,10 @@ def optimize(
 
         seen.add(key)
 
-    while len(observations) < optimization_config.initial_points:
+    while (
+        len(observations)
+        < optimization_config.initial_points
+    ):
         evaluate_candidate(
             _random_feasible_decision(
                 rng=rng,
@@ -246,32 +300,41 @@ def optimize(
             )
         )
 
-    for _ in range(optimization_config.iterations):
+    for _ in range(
+        optimization_config.iterations
+    ):
         x_train = np.vstack(
-            [_decision_to_array(observation.decision) for observation in observations]
+            [
+                _decision_to_array(
+                    observation.decision
+                )
+                for observation in observations
+            ]
         )
 
         y_train = np.asarray(
-            [observation.objective.mean_incremental_installs for observation in observations],
+            [
+                observation.objective.mean_incremental_installs
+                for observation in observations
+            ],
             dtype=float,
         )
 
         kernel = Matern(
-            length_scale=np.ones(len(CONTROLLABLE_VARIABLES)),
+            length_scale=np.ones(
+                len(CONTROLLABLE_VARIABLES)
+            ),
             nu=2.5,
         ) + WhiteKernel(
-            noise_level=1.0,
-            noise_level_bounds=(
-                1e-6,
-                1e5,
-            ),
+            noise_level=1e-4,
+            noise_level_bounds="fixed",
         )
 
         surrogate = GaussianProcessRegressor(
             kernel=kernel,
             normalize_y=True,
             random_state=optimization_config.random_seed,
-            n_restarts_optimizer=1,
+            optimizer=None,
         )
 
         surrogate.fit(
@@ -285,14 +348,23 @@ def optimize(
             size=2_000,
         )
 
-        x_candidates = np.vstack([_decision_to_array(candidate) for candidate in candidate_pool])
-
-        means, standard_deviations = surrogate.predict(
-            x_candidates,
-            return_std=True,
+        x_candidates = np.vstack(
+            [
+                _decision_to_array(candidate)
+                for candidate in candidate_pool
+            ]
         )
 
-        best_value = float(np.max(y_train))
+        means, standard_deviations = (
+            surrogate.predict(
+                x_candidates,
+                return_std=True,
+            )
+        )
+
+        best_value = float(
+            np.max(y_train)
+        )
 
         acquisition = _expected_improvement(
             mean=means,
@@ -301,14 +373,23 @@ def optimize(
             exploration=optimization_config.exploration,
         )
 
-        order = np.argsort(acquisition)[::-1]
+        order = np.argsort(
+            acquisition
+        )[::-1]
 
-        next_candidate: dict[DecisionVariable, float] | None = None
+        next_candidate: (
+            dict[DecisionVariable, float] | None
+        ) = None
 
         for index in order:
-            candidate = candidate_pool[int(index)]
+            candidate = candidate_pool[
+                int(index)
+            ]
 
-            key = tuple(candidate[variable] for variable in CONTROLLABLE_VARIABLES)
+            key = tuple(
+                candidate[variable]
+                for variable in CONTROLLABLE_VARIABLES
+            )
 
             if key not in seen:
                 next_candidate = candidate
@@ -317,12 +398,22 @@ def optimize(
         if next_candidate is None:
             break
 
-        evaluate_candidate(next_candidate)
+        evaluate_candidate(
+            next_candidate
+        )
 
-    best_observation = max(
-        observations,
-        key=lambda observation: observation.objective.mean_incremental_installs,
+    best_index = int(
+        np.argmax(
+            [
+                observation.objective.mean_incremental_installs
+                for observation in observations
+            ]
+        )
     )
+
+    best_observation = observations[
+        best_index
+    ]
 
     return BayesianOptimizationResult(
         best_decision=best_observation.decision.copy(),
