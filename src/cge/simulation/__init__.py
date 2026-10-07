@@ -1,15 +1,21 @@
 from cge.simulation.counterfactual import (
-    CounterfactualSummary,
     TreatmentIntervention,
     compare_strategy,
     simulate_organic_installs,
-    summarize_counterfactual,
+)
+from cge.simulation.impact import (
+    ImpactSummary,
+    estimate_baseline_installs,
+    estimate_incremental_impact,
+    summarize_incremental_impact,
 )
 
 __all__ = [
-    "CounterfactualSummary",
+    "ImpactSummary",
     "TreatmentIntervention",
     "compare_strategy",
+    "estimate_baseline_installs",
+    "estimate_incremental_impact",
     "simulate_organic_installs",
-    "summarize_counterfactual",
+    "summarize_incremental_impact",
 ]
