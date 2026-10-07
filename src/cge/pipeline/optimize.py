@@ -15,6 +15,10 @@ from cge.optimization.problem import (
     DecisionVariable,
     OptimizationProblem,
 )
+from cge.reporting.recommendation import (
+    StrategyRecommendation,
+    build_recommendation,
+)
 from cge.simulation.counterfactual import TreatmentIntervention
 
 
@@ -25,6 +29,7 @@ class OptimizationPipelineResult:
     optimization: BayesianOptimizationResult
     objective: ObjectiveResult
     intervention: TreatmentIntervention
+    recommendation: StrategyRecommendation
 
 
 def _decision_to_intervention(
@@ -62,6 +67,7 @@ def optimize_growth_strategy(
     2. Searches the feasible decision space using Bayesian optimization.
     3. Evaluates the best decision through the causal objective.
     4. Converts the decision into a causal intervention.
+    5. Builds a business-facing strategy recommendation.
     """
 
     optimization_problem = problem or OptimizationProblem.default()
@@ -84,8 +90,13 @@ def optimize_growth_strategy(
 
     intervention = _decision_to_intervention(best_decision)
 
+    recommendation = build_recommendation(
+        optimization
+    )
+
     return OptimizationPipelineResult(
         optimization=optimization,
         objective=objective,
         intervention=intervention,
+        recommendation=recommendation,
     )

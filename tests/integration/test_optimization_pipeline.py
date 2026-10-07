@@ -50,3 +50,21 @@ def test_optimization_pipeline_returns_result() -> None:
             DecisionVariable.PAID_UA_SPEND
         ]
     )
+
+    assert (
+        result.recommendation.decision
+        == result.optimization.best_decision
+    )
+
+    assert (
+        result.recommendation.expected_incremental_installs
+        == result.objective.mean_incremental_installs
+    )
+
+    assert (
+        result.recommendation.probability_positive
+        == result.objective.probability_positive
+    )
+
+    assert result.recommendation.lower_bound == result.objective.lower
+    assert result.recommendation.upper_bound == result.objective.upper
