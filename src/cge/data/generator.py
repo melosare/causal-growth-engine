@@ -88,9 +88,7 @@ class SyntheticGrowthGenerator:
                 )
 
                 paid_ua_spend = np.clip(
-                    10_000.0
-                    * demand_pressure
-                    * title_marketing_efficiency[title_index]
+                    10_000.0 * demand_pressure * title_marketing_efficiency[title_index]
                     + self.rng.normal(0.0, 700.0),
                     5_000.0,
                     15_000.0,
@@ -105,33 +103,21 @@ class SyntheticGrowthGenerator:
 
                 if influencer_contracts > 0:
                     contract_value = self.rng.uniform(2_000.0, 4_000.0)
-                    influencer_spend = (
-                        influencer_contracts * contract_value
-                    )
+                    influencer_spend = influencer_contracts * contract_value
                 else:
                     influencer_spend = 0.0
 
-                social_media_posts = int(
-                    self.rng.poisson(
-                        np.clip(3.0 * demand_pressure, 0.5, 8.0)
-                    )
-                )
+                social_media_posts = int(self.rng.poisson(np.clip(3.0 * demand_pressure, 0.5, 8.0)))
                 social_media_posts = min(social_media_posts, 10)
 
-                product_test_release = int(
-                    self.rng.poisson(0.5)
-                )
+                product_test_release = int(self.rng.poisson(0.5))
                 product_test_release = min(product_test_release, 5)
 
-                product_version_update = int(
-                    self.rng.poisson(0.12)
-                )
+                product_version_update = int(self.rng.poisson(0.12))
                 product_version_update = min(product_version_update, 5)
 
                 paid_installs = np.clip(
-                    10_000.0
-                    + 0.55 * (paid_ua_spend - 5_000.0)
-                    + self.rng.normal(0.0, 700.0),
+                    10_000.0 + 0.55 * (paid_ua_spend - 5_000.0) + self.rng.normal(0.0, 700.0),
                     10_000.0,
                     15_000.0,
                 )
@@ -147,14 +133,9 @@ class SyntheticGrowthGenerator:
                     5.0,
                 )
 
-                current_rating = (
-                    0.92 * previous_rating[title_index]
-                    + 0.08 * rating_target
-                )
+                current_rating = 0.92 * previous_rating[title_index] + 0.08 * rating_target
 
-                current_rating = float(
-                    np.clip(current_rating, 3.0, 5.0)
-                )
+                current_rating = float(np.clip(current_rating, 3.0, 5.0))
 
                 previous_rating[title_index] = current_rating
 
@@ -169,11 +150,7 @@ class SyntheticGrowthGenerator:
 
                 social_media_likes = int(
                     np.clip(
-                        self.rng.poisson(
-                            65.0
-                            + 32.0 * social_activity
-                            + 40.0 * market_demand
-                        ),
+                        self.rng.poisson(65.0 + 32.0 * social_activity + 40.0 * market_demand),
                         0,
                         1_000,
                     )
@@ -181,36 +158,24 @@ class SyntheticGrowthGenerator:
 
                 social_media_comments = int(
                     np.clip(
-                        self.rng.poisson(
-                            7.0
-                            + 0.09 * social_media_likes
-                        ),
+                        self.rng.poisson(7.0 + 0.09 * social_media_likes),
                         0,
                         100,
                     )
                 )
 
                 treatment_signal = (
-                    self.truth.paid_ua_effect
-                    * np.log1p(paid_ua_spend / 5_000.0)
-                    + self.truth.influencer_effect
-                    * np.log1p(influencer_spend / 1_000.0)
-                    + self.truth.social_posts_effect
-                    * social_media_posts
-                    + self.truth.test_release_effect
-                    * product_test_release
-                    + self.truth.version_update_effect
-                    * product_version_update
+                    self.truth.paid_ua_effect * np.log1p(paid_ua_spend / 5_000.0)
+                    + self.truth.influencer_effect * np.log1p(influencer_spend / 1_000.0)
+                    + self.truth.social_posts_effect * social_media_posts
+                    + self.truth.test_release_effect * product_test_release
+                    + self.truth.version_update_effect * product_version_update
                 )
 
-                demand_signal = (
-                    self.truth.organic_demand_effect
-                    * market_demand
-                )
+                demand_signal = self.truth.organic_demand_effect * market_demand
 
                 organic_mean = (
-                    self.truth.organic_baseline
-                    * baseline
+                    self.truth.organic_baseline * baseline
                     + demand_signal
                     + 1_000.0 * treatment_signal
                     + 180.0 * np.log1p(social_media_likes)
@@ -251,15 +216,8 @@ class SyntheticGrowthGenerator:
 
                 revenue_mean = (
                     self.truth.revenue_per_install
-                    * (
-                        organic_installs
-                        + 0.15 * paid_installs
-                    )
-                    * (
-                        0.65
-                        + 0.65 * engagement
-                        + 0.35 * retention
-                    )
+                    * (organic_installs + 0.15 * paid_installs)
+                    * (0.65 + 0.65 * engagement + 0.35 * retention)
                 )
 
                 revenue = float(

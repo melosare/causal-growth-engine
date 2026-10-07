@@ -154,6 +154,4 @@ def test_negative_intervention_is_rejected() -> None:
     except ValueError:
         pass
     else:
-        raise AssertionError(
-            "Negative treatment intervention should raise ValueError."
-        )
+        raise AssertionError("Negative treatment intervention should raise ValueError.")

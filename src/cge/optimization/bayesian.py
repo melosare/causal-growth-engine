@@ -83,14 +83,9 @@ def _array_to_decision(
 
         value = max(bounds.minimum, min(bounds.maximum, value))
 
-        steps = round(
-            (value - bounds.minimum) / bounds.step
-        )
+        steps = round((value - bounds.minimum) / bounds.step)
 
-        projected = (
-            bounds.minimum
-            + steps * bounds.step
-        )
+        projected = bounds.minimum + steps * bounds.step
 
         projected = max(
             bounds.minimum,
@@ -116,21 +111,11 @@ def _random_feasible_decision(
         for variable in variables:
             bounds = problem.bounds[variable]
 
-            n_steps = int(
-                round(
-                    (bounds.maximum - bounds.minimum)
-                    / bounds.step
-                )
-            )
+            n_steps = int(round((bounds.maximum - bounds.minimum) / bounds.step))
 
-            step_index = int(
-                rng.integers(0, n_steps + 1)
-            )
+            step_index = int(rng.integers(0, n_steps + 1))
 
-            decision[variable] = (
-                bounds.minimum
-                + step_index * bounds.step
-            )
+            decision[variable] = bounds.minimum + step_index * bounds.step
 
         try:
             problem.validate_decision(decision)
@@ -139,9 +124,7 @@ def _random_feasible_decision(
 
         return decision
 
-    raise RuntimeError(
-        "Unable to generate a feasible optimization candidate."
-    )
+    raise RuntimeError("Unable to generate a feasible optimization candidate.")
 
 
 def _normal_pdf(values: np.ndarray) -> np.ndarray:
@@ -153,10 +136,7 @@ def _normal_pdf(values: np.ndarray) -> np.ndarray:
 def _normal_cdf(values: np.ndarray) -> np.ndarray:
     """Evaluate the standard normal cumulative distribution."""
 
-    result = 0.5 * (
-        1.0
-        + np.vectorize(erf)(values / sqrt(2.0))
-    )
+    result = 0.5 * (1.0 + np.vectorize(erf)(values / sqrt(2.0)))
 
     return np.asarray(result, dtype=float)
 
@@ -169,11 +149,7 @@ def _expected_improvement(
 ) -> np.ndarray:
     """Calculate expected improvement for maximization."""
 
-    improvement = (
-        mean
-        - best_value
-        - exploration
-    )
+    improvement = mean - best_value - exploration
 
     safe_std = np.maximum(
         standard_deviation,
@@ -182,10 +158,7 @@ def _expected_improvement(
 
     z = improvement / safe_std
 
-    result = (
-        improvement * _normal_cdf(z)
-        + safe_std * _normal_pdf(z)
-    )
+    result = improvement * _normal_cdf(z) + safe_std * _normal_pdf(z)
 
     return np.asarray(result, dtype=float)
 
@@ -206,10 +179,7 @@ def _candidate_pool(
             problem=problem,
         )
 
-        key = tuple(
-            decision[variable]
-            for variable in CONTROLLABLE_VARIABLES
-        )
+        key = tuple(decision[variable] for variable in CONTROLLABLE_VARIABLES)
 
         if key in seen:
             continue
@@ -234,16 +204,10 @@ def optimize(
     candidate to evaluate.
     """
 
-    optimization_problem = (
-        problem or OptimizationProblem.default()
-    )
-    optimization_config = (
-        config or BayesianOptimizationConfig()
-    )
+    optimization_problem = problem or OptimizationProblem.default()
+    optimization_config = config or BayesianOptimizationConfig()
 
-    rng = np.random.default_rng(
-        optimization_config.random_seed
-    )
+    rng = np.random.default_rng(optimization_config.random_seed)
 
     observations: list[OptimizationObservation] = []
     seen: set[tuple[float, ...]] = set()
@@ -251,10 +215,7 @@ def optimize(
     def evaluate_candidate(
         decision: dict[DecisionVariable, float],
     ) -> None:
-        key = tuple(
-            decision[variable]
-            for variable in CONTROLLABLE_VARIABLES
-        )
+        key = tuple(decision[variable] for variable in CONTROLLABLE_VARIABLES)
 
         if key in seen:
             return
@@ -287,36 +248,23 @@ def optimize(
 
     for _ in range(optimization_config.iterations):
         x_train = np.vstack(
-            [
-                _decision_to_array(
-                    observation.decision
-                )
-                for observation in observations
-            ]
+            [_decision_to_array(observation.decision) for observation in observations]
         )
 
         y_train = np.asarray(
-            [
-                observation.objective.mean_incremental_installs
-                for observation in observations
-            ],
+            [observation.objective.mean_incremental_installs for observation in observations],
             dtype=float,
         )
 
-        kernel = (
-            Matern(
-                length_scale=np.ones(
-                    len(CONTROLLABLE_VARIABLES)
-                ),
-                nu=2.5,
-            )
-            + WhiteKernel(
-                noise_level=1.0,
-                noise_level_bounds=(
-                    1e-6,
-                    1e5,
-                ),
-            )
+        kernel = Matern(
+            length_scale=np.ones(len(CONTROLLABLE_VARIABLES)),
+            nu=2.5,
+        ) + WhiteKernel(
+            noise_level=1.0,
+            noise_level_bounds=(
+                1e-6,
+                1e5,
+            ),
         )
 
         surrogate = GaussianProcessRegressor(
@@ -337,12 +285,7 @@ def optimize(
             size=2_000,
         )
 
-        x_candidates = np.vstack(
-            [
-                _decision_to_array(candidate)
-                for candidate in candidate_pool
-            ]
-        )
+        x_candidates = np.vstack([_decision_to_array(candidate) for candidate in candidate_pool])
 
         means, standard_deviations = surrogate.predict(
             x_candidates,
@@ -358,19 +301,14 @@ def optimize(
             exploration=optimization_config.exploration,
         )
 
-        order = np.argsort(
-            acquisition
-        )[::-1]
+        order = np.argsort(acquisition)[::-1]
 
         next_candidate: dict[DecisionVariable, float] | None = None
 
         for index in order:
             candidate = candidate_pool[int(index)]
 
-            key = tuple(
-                candidate[variable]
-                for variable in CONTROLLABLE_VARIABLES
-            )
+            key = tuple(candidate[variable] for variable in CONTROLLABLE_VARIABLES)
 
             if key not in seen:
                 next_candidate = candidate
@@ -383,9 +321,7 @@ def optimize(
 
     best_observation = max(
         observations,
-        key=lambda observation: (
-            observation.objective.mean_incremental_installs
-        ),
+        key=lambda observation: observation.objective.mean_incremental_installs,
     )
 
     return BayesianOptimizationResult(

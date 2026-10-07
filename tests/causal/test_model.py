@@ -41,13 +41,9 @@ def test_prepare_data_applies_treatment_transformations() -> None:
 
     prepared = prepare_data(data)
 
-    expected_paid_ua = np.log1p(
-        data["paid_ua_spend"].to_numpy() / 5_000.0
-    )
+    expected_paid_ua = np.log1p(data["paid_ua_spend"].to_numpy() / 5_000.0)
 
-    expected_influencer = np.log1p(
-        data["influencer_spend"].to_numpy() / 1_000.0
-    )
+    expected_influencer = np.log1p(data["influencer_spend"].to_numpy() / 1_000.0)
 
     np.testing.assert_allclose(
         prepared.treatment_matrix[:, 0],
@@ -95,9 +91,7 @@ def test_build_model_contains_expected_parameters() -> None:
         "organic_installs",
     }
 
-    assert expected_variables.issubset(
-        set(model.named_vars)
-    )
+    assert expected_variables.issubset(set(model.named_vars))
 
 
 def test_model_uses_five_treatment_effects() -> None:

@@ -28,8 +28,7 @@ def test_bayesian_optimization_returns_result(
     ) -> ObjectiveResult:
         score = (
             decision[DecisionVariable.PAID_UA_SPEND]
-            + 2.0
-            * decision[DecisionVariable.SOCIAL_MEDIA_POSTS]
+            + 2.0 * decision[DecisionVariable.SOCIAL_MEDIA_POSTS]
             + decision[DecisionVariable.PRODUCT_VERSION_UPDATE]
         )
 
@@ -63,9 +62,7 @@ def test_bayesian_optimization_returns_result(
 
     assert len(result.observations) == 5
 
-    problem.validate_decision(
-        result.best_decision
-    )
+    problem.validate_decision(result.best_decision)
 
 
 def test_bayesian_optimization_is_reproducible(
@@ -80,8 +77,7 @@ def test_bayesian_optimization_is_reproducible(
         problem: OptimizationProblem,
     ) -> ObjectiveResult:
         score = (
-            decision[DecisionVariable.PAID_UA_SPEND]
-            + decision[DecisionVariable.INFLUENCER_SPEND]
+            decision[DecisionVariable.PAID_UA_SPEND] + decision[DecisionVariable.INFLUENCER_SPEND]
         )
 
         return ObjectiveResult(
@@ -131,9 +127,7 @@ def test_config_rejects_invalid_values() -> None:
     except ValueError:
         pass
     else:
-        raise AssertionError(
-            "Expected initial_points validation error."
-        )
+        raise AssertionError("Expected initial_points validation error.")
 
     try:
         BayesianOptimizationConfig(
@@ -142,9 +136,7 @@ def test_config_rejects_invalid_values() -> None:
     except ValueError:
         pass
     else:
-        raise AssertionError(
-            "Expected iterations validation error."
-        )
+        raise AssertionError("Expected iterations validation error.")
 
     try:
         BayesianOptimizationConfig(
@@ -153,6 +145,4 @@ def test_config_rejects_invalid_values() -> None:
     except ValueError:
         pass
     else:
-        raise AssertionError(
-            "Expected exploration validation error."
-        )
+        raise AssertionError("Expected exploration validation error.")

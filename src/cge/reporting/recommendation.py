@@ -38,9 +38,7 @@ def build_recommendation(
 
     return StrategyRecommendation(
         decision=result.best_decision.copy(),
-        expected_incremental_installs=(
-            objective.mean_incremental_installs
-        ),
+        expected_incremental_installs=(objective.mean_incremental_installs),
         lower_bound=objective.lower,
         upper_bound=objective.upper,
         probability_positive=objective.probability_positive,
@@ -62,33 +60,22 @@ def format_recommendation(
 
     for variable in DecisionVariable:
         value = recommendation.decision[variable]
-        lines.append(
-            f"  {variable.value}: {value:g}"
-        )
+        lines.append(f"  {variable.value}: {value:g}")
 
     lines.extend(
         [
             "",
             "Expected impact:",
-            (
-                "  Incremental installs: "
-                f"{recommendation.expected_incremental_installs:,.1f}"
-            ),
+            (f"  Incremental installs: {recommendation.expected_incremental_installs:,.1f}"),
             (
                 "  Credible interval: "
                 f"[{recommendation.lower_bound:,.1f}, "
                 f"{recommendation.upper_bound:,.1f}]"
             ),
-            (
-                "  Probability of positive impact: "
-                f"{recommendation.probability_positive:.1%}"
-            ),
+            (f"  Probability of positive impact: {recommendation.probability_positive:.1%}"),
             "",
             "Optimization:",
-            (
-                "  Evaluations: "
-                f"{recommendation.diagnostics.n_observations}"
-            ),
+            (f"  Evaluations: {recommendation.diagnostics.n_observations}"),
             (
                 "  Improvement over initial candidate: "
                 f"{recommendation.diagnostics.improvement:,.1f}"

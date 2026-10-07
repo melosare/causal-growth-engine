@@ -45,15 +45,9 @@ def _decision_to_intervention(
     return TreatmentIntervention(
         paid_ua_spend=decision[DecisionVariable.PAID_UA_SPEND],
         influencer_spend=decision[DecisionVariable.INFLUENCER_SPEND],
-        social_media_posts=decision[
-            DecisionVariable.SOCIAL_MEDIA_POSTS
-        ],
-        product_test_release=decision[
-            DecisionVariable.PRODUCT_TEST_RELEASE
-        ],
-        product_version_update=decision[
-            DecisionVariable.PRODUCT_VERSION_UPDATE
-        ],
+        social_media_posts=decision[DecisionVariable.SOCIAL_MEDIA_POSTS],
+        product_test_release=decision[DecisionVariable.PRODUCT_TEST_RELEASE],
+        product_version_update=decision[DecisionVariable.PRODUCT_VERSION_UPDATE],
     )
 
 
@@ -63,18 +57,7 @@ def optimize_growth_strategy(
     problem: OptimizationProblem | None = None,
     config: BayesianOptimizationConfig | None = None,
 ) -> OptimizationPipelineResult:
-    """
-    Find and evaluate the best growth strategy.
-
-    The workflow:
-
-    1. Defines the optimization problem.
-    2. Searches the feasible decision space using Bayesian optimization.
-    3. Evaluates the best decision through the causal objective.
-    4. Converts the decision into a causal intervention.
-    5. Builds a business-facing strategy recommendation.
-    6. Builds a structured growth report.
-    """
+    """Run the CGE optimization workflow and return its structured result."""
 
     optimization_problem = problem or OptimizationProblem.default()
 
@@ -95,15 +78,15 @@ def optimize_growth_strategy(
     )
 
     intervention = _decision_to_intervention(
-        best_decision
+        best_decision,
     )
 
     recommendation = build_recommendation(
-        optimization
+        optimization,
     )
 
     report = build_growth_report(
-        recommendation
+        recommendation,
     )
 
     return OptimizationPipelineResult(

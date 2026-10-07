@@ -40,53 +40,29 @@ def test_optimization_pipeline_returns_result() -> None:
 
     assert result.optimization.best_decision
 
-    assert np.isfinite(
-        result.objective.mean_incremental_installs
-    )
+    assert np.isfinite(result.objective.mean_incremental_installs)
 
     assert (
         result.intervention.paid_ua_spend
-        == result.optimization.best_decision[
-            DecisionVariable.PAID_UA_SPEND
-        ]
+        == result.optimization.best_decision[DecisionVariable.PAID_UA_SPEND]
     )
 
-    assert (
-        result.recommendation.decision
-        == result.optimization.best_decision
-    )
+    assert result.recommendation.decision == result.optimization.best_decision
 
     assert (
         result.recommendation.expected_incremental_installs
         == result.objective.mean_incremental_installs
     )
 
-    assert (
-        result.recommendation.probability_positive
-        == result.objective.probability_positive
-    )
+    assert result.recommendation.probability_positive == result.objective.probability_positive
 
     assert result.recommendation.lower_bound == result.objective.lower
     assert result.recommendation.upper_bound == result.objective.upper
-    assert (
-        result.report.recommendation
-        == result.recommendation
-    )
+    assert result.report.recommendation == result.recommendation
 
-    assert (
-        result.report.expected_incremental_installs
-        == result.objective.mean_incremental_installs
-    )
+    assert result.report.expected_incremental_installs == result.objective.mean_incremental_installs
 
-    assert (
-        result.report.total_paid_spend
-        == (
-            result.optimization.best_decision[
-                DecisionVariable.PAID_UA_SPEND
-            ]
-            + result.optimization.best_decision[
-                DecisionVariable.INFLUENCER_SPEND
-            ]
-        )
+    assert result.report.total_paid_spend == (
+        result.optimization.best_decision[DecisionVariable.PAID_UA_SPEND]
+        + result.optimization.best_decision[DecisionVariable.INFLUENCER_SPEND]
     )
-

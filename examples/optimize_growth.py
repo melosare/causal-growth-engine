@@ -7,12 +7,11 @@ import arviz as az
 from cge.causal.model import ModelConfig, fit_model
 from cge.data import DatasetConfig, SyntheticGrowthGenerator
 from cge.optimization.bayesian import BayesianOptimizationConfig
-from cge.pipeline import optimize_growth_strategy
-from cge.reporting import format_growth_report
+from cge.pipeline import OptimizationPipelineResult, optimize_growth_strategy
 
 
-def main() -> None:
-    """Run the complete causal growth optimization workflow."""
+def run_example() -> OptimizationPipelineResult:
+    """Run the complete causal growth optimization workflow and return its result."""
 
     data, _ = SyntheticGrowthGenerator(
         DatasetConfig(
@@ -47,12 +46,4 @@ def main() -> None:
         ),
     )
 
-    print(
-        format_growth_report(
-            result.report
-        )
-    )
-
-
-if __name__ == "__main__":
-    main()
+    return result

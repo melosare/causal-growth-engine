@@ -37,9 +37,7 @@ def _posterior_values(
     posterior: Any = cast(Any, trace).posterior
 
     if parameter not in posterior:
-        raise ValueError(
-            f"Posterior does not contain required parameter: {parameter}"
-        )
+        raise ValueError(f"Posterior does not contain required parameter: {parameter}")
 
     values = np.asarray(posterior[parameter].values)
 
@@ -55,31 +53,24 @@ def posterior_effect_summary(
     """Summarize one treatment's posterior causal effect."""
 
     if treatment not in EFFECT_PARAMETERS:
-        raise ValueError(
-            f"Unknown treatment: {treatment}"
-        )
+        raise ValueError(f"Unknown treatment: {treatment}")
 
     expected_parameter = EFFECT_PARAMETERS[treatment]
 
     if parameter != expected_parameter:
         raise ValueError(
-            f"Treatment '{treatment}' expects parameter "
-            f"'{expected_parameter}', got '{parameter}'."
+            f"Treatment '{treatment}' expects parameter '{expected_parameter}', got '{parameter}'."
         )
 
     if not 0.0 < credible_interval < 1.0:
-        raise ValueError(
-            "credible_interval must be between 0 and 1."
-        )
+        raise ValueError("credible_interval must be between 0 and 1.")
 
     values = _posterior_values(
         trace,
         parameter,
     )
 
-    tail_probability = (
-        1.0 - credible_interval
-    ) / 2.0
+    tail_probability = (1.0 - credible_interval) / 2.0
 
     lower = float(
         np.quantile(
@@ -101,9 +92,7 @@ def posterior_effect_summary(
         mean=float(np.mean(values)),
         lower=lower,
         upper=upper,
-        probability_positive=float(
-            np.mean(values > 0.0)
-        ),
+        probability_positive=float(np.mean(values > 0.0)),
     )
 
 

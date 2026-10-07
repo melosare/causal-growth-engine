@@ -25,10 +25,7 @@ class OptimizationDiagnostics:
         if self.initial_best_objective == 0.0:
             return 0.0
 
-        return (
-            self.improvement
-            / abs(self.initial_best_objective)
-        )
+        return self.improvement / abs(self.initial_best_objective)
 
 
 def summarize_optimization(
@@ -37,15 +34,10 @@ def summarize_optimization(
     """Summarize the search history of an optimization result."""
 
     if not result.observations:
-        raise ValueError(
-            "Cannot summarize an optimization result with no observations."
-        )
+        raise ValueError("Cannot summarize an optimization result with no observations.")
 
     values = np.asarray(
-        [
-            observation.objective.mean_incremental_installs
-            for observation in result.observations
-        ],
+        [observation.objective.mean_incremental_installs for observation in result.observations],
         dtype=float,
     )
 
@@ -69,11 +61,6 @@ def decision_difference(
     """Return second-minus-first for every decision variable."""
 
     if set(first) != set(second):
-        raise ValueError(
-            "Decisions must contain the same variables."
-        )
+        raise ValueError("Decisions must contain the same variables.")
 
-    return {
-        variable: second[variable] - first[variable]
-        for variable in first
-    }
+    return {variable: second[variable] - first[variable] for variable in first}

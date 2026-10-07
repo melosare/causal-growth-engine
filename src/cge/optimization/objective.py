@@ -48,15 +48,9 @@ def _decision_to_intervention(
     return TreatmentIntervention(
         paid_ua_spend=decision[DecisionVariable.PAID_UA_SPEND],
         influencer_spend=decision[DecisionVariable.INFLUENCER_SPEND],
-        social_media_posts=decision[
-            DecisionVariable.SOCIAL_MEDIA_POSTS
-        ],
-        product_test_release=decision[
-            DecisionVariable.PRODUCT_TEST_RELEASE
-        ],
-        product_version_update=decision[
-            DecisionVariable.PRODUCT_VERSION_UPDATE
-        ],
+        social_media_posts=decision[DecisionVariable.SOCIAL_MEDIA_POSTS],
+        product_test_release=decision[DecisionVariable.PRODUCT_TEST_RELEASE],
+        product_version_update=decision[DecisionVariable.PRODUCT_VERSION_UPDATE],
     )
 
 

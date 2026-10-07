@@ -37,15 +37,11 @@ def test_default_bounds_match_real_world_ranges() -> None:
     assert paid_ua.maximum == 15_000.0
     assert paid_ua.step == 500.0
 
-    influencer = problem.bounds[
-        DecisionVariable.INFLUENCER_SPEND
-    ]
+    influencer = problem.bounds[DecisionVariable.INFLUENCER_SPEND]
     assert influencer.minimum == 0.0
     assert influencer.maximum == 8_000.0
 
-    posts = problem.bounds[
-        DecisionVariable.SOCIAL_MEDIA_POSTS
-    ]
+    posts = problem.bounds[DecisionVariable.SOCIAL_MEDIA_POSTS]
     assert posts.minimum == 0.0
     assert posts.maximum == 10.0
 

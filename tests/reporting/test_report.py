@@ -46,9 +46,7 @@ def make_recommendation():
 def test_build_growth_report() -> None:
     recommendation = make_recommendation()
 
-    report = build_growth_report(
-        recommendation
-    )
+    report = build_growth_report(recommendation)
 
     assert report.total_paid_spend == 12_000.0
     assert report.total_product_actions == 3.0
@@ -59,13 +57,9 @@ def test_build_growth_report() -> None:
 
 
 def test_format_growth_report() -> None:
-    report = build_growth_report(
-        make_recommendation()
-    )
+    report = build_growth_report(make_recommendation())
 
-    formatted = format_growth_report(
-        report
-    )
+    formatted = format_growth_report(report)
 
     assert "Causal Growth Engine Report" in formatted
     assert "Recommended strategy" in formatted

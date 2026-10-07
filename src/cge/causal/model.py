@@ -44,9 +44,7 @@ def prepare_data(data: pd.DataFrame) -> PreparedData:
     missing = required_columns - set(data.columns)
 
     if missing:
-        raise ValueError(
-            f"Missing required model columns: {sorted(missing)}"
-        )
+        raise ValueError(f"Missing required model columns: {sorted(missing)}")
 
     if data.empty:
         raise ValueError("Cannot fit a model to an empty dataset.")
@@ -136,10 +134,7 @@ def build_model(
             sigma=750.0,
         )
 
-        demand_signal = (
-            demand_effect
-            * prepared.market_demand
-        )
+        demand_signal = demand_effect * prepared.market_demand
 
         """Hierarchical baseline"""
 
@@ -161,18 +156,11 @@ def build_model(
             shape=prepared.n_titles,
         )
 
-        title_baseline = (
-            organic_baseline
-            + title_baseline_offset * title_baseline_sd
-        )
+        title_baseline = organic_baseline + title_baseline_offset * title_baseline_sd
 
         """Organic install mean"""
 
-        mu = (
-            title_baseline[prepared.title_index]
-            + demand_signal
-            + 1_000.0 * treatment_signal
-        )
+        mu = title_baseline[prepared.title_index] + demand_signal + 1_000.0 * treatment_signal
 
         mu = pm.math.maximum(mu, 500.0)
 

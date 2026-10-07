@@ -27,17 +27,13 @@ class VariableBounds:
             raise ValueError("minimum must be non-negative.")
 
         if self.maximum < self.minimum:
-            raise ValueError(
-                "maximum must be greater than or equal to minimum."
-            )
+            raise ValueError("maximum must be greater than or equal to minimum.")
 
         if self.step <= 0:
             raise ValueError("step must be positive.")
 
         if self.minimum + self.step > self.maximum and self.minimum != self.maximum:
-            raise ValueError(
-                "step must not exceed the variable range."
-            )
+            raise ValueError("step must not exceed the variable range.")
 
 
 DEFAULT_BOUNDS: dict[DecisionVariable, VariableBounds] = {
@@ -81,9 +77,7 @@ class OptimizationConstraints:
             raise ValueError("daily_budget must be positive.")
 
         if self.influencer_monthly_budget < 0:
-            raise ValueError(
-                "influencer_monthly_budget must be non-negative."
-            )
+            raise ValueError("influencer_monthly_budget must be non-negative.")
 
 
 @dataclass(frozen=True)
@@ -129,32 +123,21 @@ class OptimizationProblem:
 
             if value < variable_bounds.minimum:
                 raise ValueError(
-                    f"{variable.value} is below its minimum "
-                    f"of {variable_bounds.minimum}."
+                    f"{variable.value} is below its minimum of {variable_bounds.minimum}."
                 )
 
             if value > variable_bounds.maximum:
                 raise ValueError(
-                    f"{variable.value} exceeds its maximum "
-                    f"of {variable_bounds.maximum}."
+                    f"{variable.value} exceeds its maximum of {variable_bounds.maximum}."
                 )
 
-            scaled_step = (
-                value - variable_bounds.minimum
-            ) / variable_bounds.step
+            scaled_step = (value - variable_bounds.minimum) / variable_bounds.step
 
             if abs(scaled_step - round(scaled_step)) > 1e-9:
-                raise ValueError(
-                    f"{variable.value} must use increments of "
-                    f"{variable_bounds.step}."
-                )
+                raise ValueError(f"{variable.value} must use increments of {variable_bounds.step}.")
 
-        paid_ua_spend = decision[
-            DecisionVariable.PAID_UA_SPEND
-        ]
-        influencer_spend = decision[
-            DecisionVariable.INFLUENCER_SPEND
-        ]
+        paid_ua_spend = decision[DecisionVariable.PAID_UA_SPEND]
+        influencer_spend = decision[DecisionVariable.INFLUENCER_SPEND]
 
         if paid_ua_spend + influencer_spend > self.constraints.daily_budget:
             raise ValueError(

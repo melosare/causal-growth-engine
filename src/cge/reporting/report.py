@@ -41,8 +41,7 @@ def build_growth_report(
     decision = recommendation.decision
 
     total_paid_spend = (
-        decision[DecisionVariable.PAID_UA_SPEND]
-        + decision[DecisionVariable.INFLUENCER_SPEND]
+        decision[DecisionVariable.PAID_UA_SPEND] + decision[DecisionVariable.INFLUENCER_SPEND]
     )
 
     total_product_actions = (
@@ -74,50 +73,30 @@ def format_growth_report(
 
     for variable in DecisionVariable:
         value = recommendation.decision[variable]
-        lines.append(
-            f"{variable.value}: {value:g}"
-        )
+        lines.append(f"{variable.value}: {value:g}")
 
     lines.extend(
         [
             "",
             "Expected impact",
             "---------------",
-            (
-                "Expected incremental installs: "
-                f"{report.expected_incremental_installs:,.1f}"
-            ),
+            (f"Expected incremental installs: {report.expected_incremental_installs:,.1f}"),
             (
                 "Credible interval: "
                 f"[{report.credible_interval[0]:,.1f}, "
                 f"{report.credible_interval[1]:,.1f}]"
             ),
-            (
-                "Probability of positive impact: "
-                f"{report.probability_positive:.1%}"
-            ),
+            (f"Probability of positive impact: {report.probability_positive:.1%}"),
             "",
             "Resource allocation",
             "-------------------",
-            (
-                "Paid + influencer spend: "
-                f"${report.total_paid_spend:,.0f}"
-            ),
-            (
-                "Product actions: "
-                f"{report.total_product_actions:,.0f}"
-            ),
+            (f"Paid + influencer spend: ${report.total_paid_spend:,.0f}"),
+            (f"Product actions: {report.total_product_actions:,.0f}"),
             "",
             "Optimization diagnostics",
             "-------------------------",
-            (
-                "Candidates evaluated: "
-                f"{recommendation.diagnostics.n_observations}"
-            ),
-            (
-                "Improvement over initial candidate: "
-                f"{recommendation.diagnostics.improvement:,.1f}"
-            ),
+            (f"Candidates evaluated: {recommendation.diagnostics.n_observations}"),
+            (f"Improvement over initial candidate: {recommendation.diagnostics.improvement:,.1f}"),
         ]
     )
 

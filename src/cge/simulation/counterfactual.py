@@ -37,9 +37,7 @@ class TreatmentIntervention:
         for column, value in values.items():
             if value is not None:
                 if value < 0:
-                    raise ValueError(
-                        f"{column} intervention cannot be negative."
-                    )
+                    raise ValueError(f"{column} intervention cannot be negative.")
 
                 result[column] = value
 
@@ -67,9 +65,7 @@ def _posterior_values(
     posterior: Any = cast(Any, trace).posterior
 
     if variable not in posterior:
-        raise ValueError(
-            f"Posterior does not contain required variable: {variable}"
-        )
+        raise ValueError(f"Posterior does not contain required variable: {variable}")
 
     values = np.asarray(posterior[variable].values)
 
@@ -83,14 +79,8 @@ def _build_treatment_matrix(
 
     return np.column_stack(
         [
-            np.log1p(
-                data["paid_ua_spend"].to_numpy(dtype=float)
-                / 5_000.0
-            ),
-            np.log1p(
-                data["influencer_spend"].to_numpy(dtype=float)
-                / 1_000.0
-            ),
+            np.log1p(data["paid_ua_spend"].to_numpy(dtype=float) / 5_000.0),
+            np.log1p(data["influencer_spend"].to_numpy(dtype=float) / 1_000.0),
             data["social_media_posts"].to_numpy(dtype=float),
             data["product_test_release"].to_numpy(dtype=float),
             data["product_version_update"].to_numpy(dtype=float),
@@ -138,10 +128,7 @@ def simulate_organic_installs(
         "title_baseline_offset",
     )
 
-    title_baseline = (
-        organic_baseline[:, None]
-        + title_baseline_offset * title_baseline_sd[:, None]
-    )
+    title_baseline = organic_baseline[:, None] + title_baseline_offset * title_baseline_sd[:, None]
 
     demand_effect = _posterior_values(
         trace,
@@ -185,16 +172,11 @@ def simulate_organic_installs(
     demand = data["market_demand"].to_numpy(dtype=float)
 
     treatment_signal = (
-        treatment_matrix[:, 0][None, :]
-        * paid_ua_effect[:, None]
-        + treatment_matrix[:, 1][None, :]
-        * influencer_effect[:, None]
-        + treatment_matrix[:, 2][None, :]
-        * social_posts_effect[:, None]
-        + treatment_matrix[:, 3][None, :]
-        * test_release_effect[:, None]
-        + treatment_matrix[:, 4][None, :]
-        * version_update_effect[:, None]
+        treatment_matrix[:, 0][None, :] * paid_ua_effect[:, None]
+        + treatment_matrix[:, 1][None, :] * influencer_effect[:, None]
+        + treatment_matrix[:, 2][None, :] * social_posts_effect[:, None]
+        + treatment_matrix[:, 3][None, :] * test_release_effect[:, None]
+        + treatment_matrix[:, 4][None, :] * version_update_effect[:, None]
     )
 
     means = (
@@ -209,13 +191,7 @@ def simulate_organic_installs(
 
     n_parameter = np.maximum(dispersion, 1e-6)
 
-    probabilities = (
-        n_parameter[:, None]
-        / (
-            n_parameter[:, None]
-            + means
-        )
-    )
+    probabilities = n_parameter[:, None] / (n_parameter[:, None] + means)
 
     return rng.negative_binomial(
         n=n_parameter[:, None],
@@ -231,10 +207,7 @@ def summarize_counterfactual(
     """Summarize incremental organic installs between two scenarios."""
 
     if baseline_simulation.shape != counterfactual_simulation.shape:
-        raise ValueError(
-            "Baseline and counterfactual simulations must have "
-            "the same shape."
-        )
+        raise ValueError("Baseline and counterfactual simulations must have the same shape.")
 
     baseline_totals = baseline_simulation.sum(axis=1)
     counterfactual_totals = counterfactual_simulation.sum(axis=1)

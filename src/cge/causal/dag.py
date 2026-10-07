@@ -52,8 +52,7 @@ VARIABLES: tuple[CausalVariable, ...] = (
         name="market_demand",
         role=VariableRole.CONFOUNDER,
         description=(
-            "Underlying market demand affecting both business decisions "
-            "and organic acquisition."
+            "Underlying market demand affecting both business decisions and organic acquisition."
         ),
     ),
     CausalVariable(
@@ -107,9 +106,7 @@ VARIABLES: tuple[CausalVariable, ...] = (
     CausalVariable(
         name="app_store_rating",
         role=VariableRole.MEDIATOR,
-        description=(
-            "Product rating affected by product changes and persistent over time."
-        ),
+        description=("Product rating affected by product changes and persistent over time."),
     ),
     CausalVariable(
         name="organic_installs",
@@ -141,35 +138,28 @@ EDGES: tuple[CausalEdge, ...] = (
     CausalEdge("market_demand", "social_media_posts"),
     CausalEdge("market_demand", "social_media_likes"),
     CausalEdge("market_demand", "organic_installs"),
-
     # Influencer operational pathway.
     CausalEdge("influencer_contracts", "influencer_spend"),
-
     # Paid acquisition pathway.
     CausalEdge("paid_ua_spend", "paid_installs"),
     CausalEdge("paid_installs", "social_media_likes"),
-
     # Social activity pathway.
     CausalEdge("social_media_posts", "social_media_likes"),
     CausalEdge("influencer_spend", "social_media_likes"),
     CausalEdge("social_media_likes", "social_media_comments"),
-
     # Product changes affect product rating.
     CausalEdge("product_test_release", "app_store_rating"),
     CausalEdge("product_version_update", "app_store_rating"),
-
     # Direct treatment effects on organic acquisition.
     CausalEdge("paid_ua_spend", "organic_installs"),
     CausalEdge("influencer_spend", "organic_installs"),
     CausalEdge("social_media_posts", "organic_installs"),
     CausalEdge("product_test_release", "organic_installs"),
     CausalEdge("product_version_update", "organic_installs"),
-
     # Mediated effects on organic acquisition.
     CausalEdge("social_media_likes", "organic_installs"),
     CausalEdge("social_media_comments", "organic_installs"),
     CausalEdge("app_store_rating", "organic_installs"),
-
     # Growth funnel.
     CausalEdge("organic_installs", "engagement"),
     CausalEdge("engagement", "retention"),
@@ -180,9 +170,7 @@ EDGES: tuple[CausalEdge, ...] = (
 )
 
 
-VARIABLE_BY_NAME: dict[str, CausalVariable] = {
-    variable.name: variable for variable in VARIABLES
-}
+VARIABLE_BY_NAME: dict[str, CausalVariable] = {variable.name: variable for variable in VARIABLES}
 
 
 TREATMENTS: tuple[str, ...] = (
@@ -211,29 +199,19 @@ OUTCOMES: tuple[str, ...] = (
 )
 
 
-CONFOUNDERS: tuple[str, ...] = (
-    "market_demand",
-)
+CONFOUNDERS: tuple[str, ...] = ("market_demand",)
 
 
 def get_parents(variable: str) -> tuple[str, ...]:
     """Return the direct causal parents of a variable."""
 
-    return tuple(
-        edge.source
-        for edge in EDGES
-        if edge.target == variable
-    )
+    return tuple(edge.source for edge in EDGES if edge.target == variable)
 
 
 def get_children(variable: str) -> tuple[str, ...]:
     """Return the direct causal children of a variable."""
 
-    return tuple(
-        edge.target
-        for edge in EDGES
-        if edge.source == variable
-    )
+    return tuple(edge.target for edge in EDGES if edge.source == variable)
 
 
 def get_variable(variable: str) -> CausalVariable:
@@ -267,32 +245,28 @@ def validate_dag() -> None:
         variable = get_variable(treatment)
         if variable.role != VariableRole.TREATMENT:
             raise ValueError(
-                f"{treatment} is listed as a treatment but has role "
-                f"{variable.role.value}."
+                f"{treatment} is listed as a treatment but has role {variable.role.value}."
             )
 
     for mediator in MEDIATORS:
         variable = get_variable(mediator)
         if variable.role != VariableRole.MEDIATOR:
             raise ValueError(
-                f"{mediator} is listed as a mediator but has role "
-                f"{variable.role.value}."
+                f"{mediator} is listed as a mediator but has role {variable.role.value}."
             )
 
     for outcome in OUTCOMES:
         variable = get_variable(outcome)
         if variable.role != VariableRole.OUTCOME:
             raise ValueError(
-                f"{outcome} is listed as an outcome but has role "
-                f"{variable.role.value}."
+                f"{outcome} is listed as an outcome but has role {variable.role.value}."
             )
 
     for confounder in CONFOUNDERS:
         variable = get_variable(confounder)
         if variable.role != VariableRole.CONFOUNDER:
             raise ValueError(
-                f"{confounder} is listed as a confounder but has role "
-                f"{variable.role.value}."
+                f"{confounder} is listed as a confounder but has role {variable.role.value}."
             )
 
 

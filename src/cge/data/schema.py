@@ -53,15 +53,10 @@ def validate_dataset(data: pd.DataFrame) -> None:
     if data["date"].duplicated().all():
         raise ValueError("Dataset dates appear to be invalid.")
 
-    numeric_columns = [
-        column for column in DATA_COLUMNS
-        if column not in {"date", "title_id"}
-    ]
+    numeric_columns = [column for column in DATA_COLUMNS if column not in {"date", "title_id"}]
 
     non_numeric = [
-        column
-        for column in numeric_columns
-        if not pd.api.types.is_numeric_dtype(data[column])
+        column for column in numeric_columns if not pd.api.types.is_numeric_dtype(data[column])
     ]
 
     if non_numeric:
@@ -74,14 +69,10 @@ def validate_dataset(data: pd.DataFrame) -> None:
 
     for column, (lower, upper) in bounded_columns.items():
         if ((data[column] < lower) | (data[column] > upper)).any():
-            raise ValueError(
-                f"{column} contains values outside [{lower}, {upper}]."
-            )
+            raise ValueError(f"{column} contains values outside [{lower}, {upper}].")
 
     nonnegative_columns = [
-        column
-        for column in numeric_columns
-        if column not in {"app_store_rating"}
+        column for column in numeric_columns if column not in {"app_store_rating"}
     ]
 
     for column in nonnegative_columns:

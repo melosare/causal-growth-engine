@@ -37,9 +37,7 @@ def make_fitted_model():
 
 
 def test_summarize_incremental_impact() -> None:
-    values = np.array(
-        [-10.0, 0.0, 10.0, 20.0, 30.0]
-    )
+    values = np.array([-10.0, 0.0, 10.0, 20.0, 30.0])
 
     summary = summarize_incremental_impact(
         values,
@@ -61,9 +59,7 @@ def test_incremental_impact_rejects_empty_input() -> None:
     except ValueError:
         pass
     else:
-        raise AssertionError(
-            "Empty input should raise ValueError."
-        )
+        raise AssertionError("Empty input should raise ValueError.")
 
 
 def test_incremental_impact_rejects_invalid_interval() -> None:
@@ -75,9 +71,7 @@ def test_incremental_impact_rejects_invalid_interval() -> None:
     except ValueError:
         pass
     else:
-        raise AssertionError(
-            "Invalid credible interval should raise ValueError."
-        )
+        raise AssertionError("Invalid credible interval should raise ValueError.")
 
 
 def test_estimate_incremental_impact() -> None:
@@ -93,12 +87,8 @@ def test_estimate_incremental_impact() -> None:
         intervention=intervention,
     )
 
-    assert np.isfinite(
-        summary.mean_incremental_installs
-    )
-    assert np.isfinite(
-        summary.median_incremental_installs
-    )
+    assert np.isfinite(summary.mean_incremental_installs)
+    assert np.isfinite(summary.median_incremental_installs)
     assert summary.lower <= summary.median_incremental_installs
     assert summary.median_incremental_installs <= summary.upper
     assert 0.0 <= summary.probability_positive <= 1.0
