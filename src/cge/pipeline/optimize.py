@@ -19,6 +19,10 @@ from cge.reporting.recommendation import (
     StrategyRecommendation,
     build_recommendation,
 )
+from cge.reporting.report import (
+    GrowthReport,
+    build_growth_report,
+)
 from cge.simulation.counterfactual import TreatmentIntervention
 
 
@@ -30,6 +34,7 @@ class OptimizationPipelineResult:
     objective: ObjectiveResult
     intervention: TreatmentIntervention
     recommendation: StrategyRecommendation
+    report: GrowthReport
 
 
 def _decision_to_intervention(
@@ -68,6 +73,7 @@ def optimize_growth_strategy(
     3. Evaluates the best decision through the causal objective.
     4. Converts the decision into a causal intervention.
     5. Builds a business-facing strategy recommendation.
+    6. Builds a structured growth report.
     """
 
     optimization_problem = problem or OptimizationProblem.default()
@@ -88,10 +94,16 @@ def optimize_growth_strategy(
         problem=optimization_problem,
     )
 
-    intervention = _decision_to_intervention(best_decision)
+    intervention = _decision_to_intervention(
+        best_decision
+    )
 
     recommendation = build_recommendation(
         optimization
+    )
+
+    report = build_growth_report(
+        recommendation
     )
 
     return OptimizationPipelineResult(
@@ -99,4 +111,5 @@ def optimize_growth_strategy(
         objective=objective,
         intervention=intervention,
         recommendation=recommendation,
+        report=report,
     )

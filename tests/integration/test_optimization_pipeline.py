@@ -68,3 +68,25 @@ def test_optimization_pipeline_returns_result() -> None:
 
     assert result.recommendation.lower_bound == result.objective.lower
     assert result.recommendation.upper_bound == result.objective.upper
+    assert (
+        result.report.recommendation
+        == result.recommendation
+    )
+
+    assert (
+        result.report.expected_incremental_installs
+        == result.objective.mean_incremental_installs
+    )
+
+    assert (
+        result.report.total_paid_spend
+        == (
+            result.optimization.best_decision[
+                DecisionVariable.PAID_UA_SPEND
+            ]
+            + result.optimization.best_decision[
+                DecisionVariable.INFLUENCER_SPEND
+            ]
+        )
+    )
+
