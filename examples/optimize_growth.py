@@ -7,10 +7,13 @@ import arviz as az
 from cge.causal.model import ModelConfig, fit_model
 from cge.data import DatasetConfig, SyntheticGrowthGenerator
 from cge.optimization.bayesian import BayesianOptimizationConfig
-from cge.pipeline.optimize import optimize_growth_strategy
+from cge.pipeline import optimize_growth_strategy
+from cge.reporting import format_growth_report
 
 
 def main() -> None:
+    """Run the complete causal growth optimization workflow."""
+
     data, _ = SyntheticGrowthGenerator(
         DatasetConfig(
             n_titles=10,
@@ -29,7 +32,10 @@ def main() -> None:
         ),
     )
 
-    trace = cast(az.InferenceData, fitted_trace)
+    trace = cast(
+        az.InferenceData,
+        fitted_trace,
+    )
 
     result = optimize_growth_strategy(
         data=data,
@@ -41,14 +47,10 @@ def main() -> None:
         ),
     )
 
-    print("Best decision:")
-    for variable, value in result.optimization.best_decision.items():
-        print(f"  {variable.value}: {value}")
-
-    print()
-    print("Expected incremental installs:")
     print(
-        f"  {result.optimization.best_objective.mean_incremental_installs:.2f}"
+        format_growth_report(
+            result.report
+        )
     )
 
 
