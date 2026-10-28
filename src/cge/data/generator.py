@@ -102,6 +102,7 @@ class SyntheticGrowthGenerator:
                 )
 
                 if influencer_contracts > 0:
+                    #lower min value of contract and ceiling output recommendation?
                     contract_value = self.rng.uniform(2_000.0, 4_000.0)
                     influencer_spend = influencer_contracts * contract_value
                 else:
