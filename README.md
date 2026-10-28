@@ -8,6 +8,8 @@ The project combines synthetic product, marketing, social, and business data to 
 
 **Current stage: End-to-end synthetic causal optimization application**
 
+Expanding test cases.
+
 The project currently includes:
 
 - Synthetic growth-data generation
